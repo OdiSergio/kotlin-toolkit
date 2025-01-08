@@ -164,6 +164,11 @@ open class R2BasicWebView(context: Context, attrs: AttributeSet) : WebView(conte
     }
 
     override fun onOverScrolled(scrollX: Int, scrollY: Int, clampedX: Boolean, clampedY: Boolean) {
+        // See https://github.com/readium/kotlin-toolkit/issues/325
+        if (isSelecting) {
+            return
+        }
+        
         if (callback != null) {
             callback?.onOverScrolled(scrollX, scrollY, clampedX, clampedY)
         }

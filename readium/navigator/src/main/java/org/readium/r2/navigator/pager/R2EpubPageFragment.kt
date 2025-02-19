@@ -21,6 +21,7 @@ import android.view.*
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -208,6 +209,19 @@ class R2EpubPageFragment : Fragment() {
                 // Do something with the event here
                 return false
             }
+
+            override fun onReceivedError(
+                view: WebView?,
+                errorCode: Int,
+                description: String?,
+                failingUrl: String?
+            ) {
+                if (errorCode ==  WebViewClient.ERROR_UNKNOWN) {
+                    webView.loadUrl("about:blank")
+                }
+                super.onReceivedError(view, errorCode, description, failingUrl)
+            }
+
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)

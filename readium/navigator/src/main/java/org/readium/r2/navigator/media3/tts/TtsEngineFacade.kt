@@ -39,6 +39,12 @@ internal class TtsEngineFacade<S : TtsEngine.Settings, P : TtsEngine.Preferences
             currentTask = UtteranceTask(id, continuation, onRange)
             engine.speak(id, text, language)
         }
+    private fun getTask(id: TtsEngine.RequestId) =
+        currentTask?.takeIf { it.requestId == id }
+
+    private fun popTask(id: TtsEngine.RequestId) =
+        getTask(id)
+            ?.also { currentTask = null }
 
     fun close() {
         currentTask?.continuation?.cancel()
@@ -57,42 +63,28 @@ internal class TtsEngineFacade<S : TtsEngine.Settings, P : TtsEngine.Preferences
         }
 
         override fun onRange(requestId: TtsEngine.RequestId, range: IntRange) {
-            currentTask
-                ?.takeIf { it.requestId == requestId }
-                ?.onRange
-                ?.invoke(range)
+            getTask(requestId)?.onRange?.invoke(range)
+
         }
 
         override fun onInterrupted(requestId: TtsEngine.RequestId) {
-            currentTask
-                ?.takeIf { it.requestId == requestId }
-                ?.continuation
-                ?.cancel()
-            currentTask = null
+            popTask(requestId)?.continuation?.cancel()
+
         }
 
         override fun onFlushed(requestId: TtsEngine.RequestId) {
-            currentTask
-                ?.takeIf { it.requestId == requestId }
-                ?.continuation
-                ?.cancel()
-            currentTask = null
+            popTask(requestId)?.continuation?.cancel()
+
         }
 
         override fun onDone(requestId: TtsEngine.RequestId) {
-            currentTask
-                ?.takeIf { it.requestId == requestId }
-                ?.continuation
-                ?.resume(null) {}
-            currentTask = null
+            popTask(requestId)?.continuation?.resume(null) {}
+
         }
 
         override fun onError(requestId: TtsEngine.RequestId, error: E) {
-            currentTask
-                ?.takeIf { it.requestId == requestId }
-                ?.continuation
-                ?.resume(error) {}
-            currentTask = null
+            popTask(requestId)?.continuation?.resume(error) {}
+
         }
     }
 }

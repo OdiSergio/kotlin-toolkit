@@ -44,7 +44,8 @@ enum class TextAlign {
     /** Align the text on the left edge of the page. */
     @SerialName("left") LEFT,
     /** Align the text on the right edge of the page. */
-    @SerialName("right") RIGHT;
+    @SerialName("right") RIGHT,
+    @SerialName("") DEFAULT;
 }
 
 @ExperimentalReadiumApi

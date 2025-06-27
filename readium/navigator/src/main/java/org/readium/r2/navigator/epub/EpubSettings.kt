@@ -117,6 +117,7 @@ internal fun ReadiumCss.update(settings: EpubSettings, useReadiumCssFontSize: Bo
                     TextAlign.JUSTIFY -> CssTextAlign.JUSTIFY
                     TextAlign.LEFT -> CssTextAlign.LEFT
                     TextAlign.RIGHT -> CssTextAlign.RIGHT
+                    TextAlign.DEFAULT -> CssTextAlign.DEFAULT
                     TextAlign.START, TextAlign.CENTER, TextAlign.END -> CssTextAlign.START
                     null -> null
                 },

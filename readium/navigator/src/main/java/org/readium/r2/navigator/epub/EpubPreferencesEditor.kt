@@ -357,7 +357,7 @@ class EpubPreferencesEditor internal constructor(
             getEffectiveValue = { state.settings.textAlign },
             getIsEffective = ::isTextAlignEffective,
             updateValue = { value -> updateValues { it.copy(textAlign = value) } },
-            supportedValues = listOf(TextAlign.START, TextAlign.LEFT, TextAlign.RIGHT, TextAlign.JUSTIFY),
+            supportedValues = listOf(TextAlign.START, TextAlign.LEFT, TextAlign.RIGHT, TextAlign.JUSTIFY, TextAlign.DEFAULT),
         )
 
     /**

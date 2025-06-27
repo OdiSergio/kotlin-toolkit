@@ -6,6 +6,7 @@
 
 package org.readium.r2.navigator.epub.css
 
+import android.util.Log
 import androidx.annotation.ColorInt
 import java.text.NumberFormat
 import java.util.*
@@ -153,7 +154,7 @@ data class UserProperties(
         // Advanced settings
         putCss("--USER__advancedSettings", flag("advanced", advancedSettings))
         putCss("--USER__typeScale", typeScale)
-        putCss("--USER__textAlign", textAlign)
+        putCss("--USER__textAlign", textAlign )
         lineHeight
             ?.onLeft { putCss("--USER__lineHeight", it) }
             ?.onRight { putCss("--USER__lineHeight", it) }
@@ -502,7 +503,8 @@ enum class TextAlign(private val css: String) : Cssable {
     START("start"),
     LEFT("left"),
     RIGHT("right"),
-    JUSTIFY("justify");
+    JUSTIFY("justify"),
+    DEFAULT("");
 
     override fun toCss(): String? = css
 }
@@ -541,6 +543,12 @@ fun interface Cssable {
 
 private fun MutableMap<String, String?>.putCss(name: String, value: Cssable?) {
     put(name, value?.toCss())
+}
+private fun MutableMap<String, String?>.putCssOrInitial(name: String, value: Cssable?) {
+    val cssValue = value?.toCss() ?: ""
+    put(name, cssValue)
+
+    Log.i("aaaa", "put $name = $cssValue - get: ${get(name)}")
 }
 
 private fun MutableMap<String, String?>.putCss(name: String, double: Double?) {

@@ -90,3 +90,4 @@ lcp.patch
 
 # direnv file containing Maven Central secrets
 .envrc
+.idea/AndroidProjectSystem.xml

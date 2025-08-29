@@ -136,6 +136,7 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
      * Determines speed during touch scrolling
      */
     private var mVelocityTracker: VelocityTracker? = null
+
     /** Initial velocity of the current movement. */
     private var mInitialVelocity: Int? = null
     private var mMinimumVelocity: Int = 0
@@ -245,7 +246,8 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                     val count = childCount
                     while (i < count) {
                         val childInsets = ViewCompat
-                            .dispatchApplyWindowInsets(getChildAt(i), applied).getInsets(WindowInsetsCompat.Type.systemBars())
+                            .dispatchApplyWindowInsets(getChildAt(i), applied)
+                            .getInsets(WindowInsetsCompat.Type.systemBars())
                         // Now keep track of any consumed by tracking each dimension's min
                         // value
                         res.left = min(
@@ -269,7 +271,10 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
 
                     // Now return a new WindowInsets, using the consumed window insets
                     return WindowInsetsCompat.Builder(applied)
-                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(res.left, res.top, res.right, res.bottom))
+                        .setInsets(
+                            WindowInsetsCompat.Type.systemBars(),
+                            Insets.of(res.left, res.top, res.right, res.bottom)
+                        )
                         .build()
                 }
             }
@@ -503,14 +508,17 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                             childLeft = paddingLeft
                             paddingLeft += child.measuredWidth
                         }
+
                         Gravity.CENTER_HORIZONTAL -> childLeft = max(
                             (width - child.measuredWidth) / 2,
                             paddingLeft
                         )
+
                         Gravity.END -> {
                             childLeft = width - paddingRight - child.measuredWidth
                             paddingRight += child.measuredWidth
                         }
+
                         else -> childLeft = paddingLeft
                     }
                     when (vgrav) {
@@ -518,14 +526,17 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                             childTop = paddingTop
                             paddingTop += child.measuredHeight
                         }
+
                         Gravity.CENTER_VERTICAL -> childTop = max(
                             (height - child.measuredHeight) / 2,
                             paddingTop
                         )
+
                         Gravity.BOTTOM -> {
                             childTop = height - paddingBottom - child.measuredHeight
                             paddingBottom += child.measuredHeight
                         }
+
                         else -> childTop = paddingTop
                     }
                     childLeft += scrollX
@@ -632,14 +643,17 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                         childLeft = paddingLeft
                         paddingLeft += child.width
                     }
+
                     Gravity.CENTER_HORIZONTAL -> childLeft = max(
                         (width - child.measuredWidth) / 2,
                         paddingLeft
                     )
+
                     Gravity.END -> {
                         childLeft = width - paddingRight - child.measuredWidth
                         paddingRight += child.measuredWidth
                     }
+
                     else -> childLeft = paddingLeft
                 }
                 childLeft += scrollX
@@ -705,6 +719,7 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                 mInitialMotionY = ev.y
                 mActivePointerId = ev.getPointerId(0)
             }
+
             MotionEvent.ACTION_MOVE -> {
                 if ((mLastMotionX > (width - mGutterSize)) || (mLastMotionX < mGutterSize)) {
                     requestDisallowInterceptTouchEvent(true)
@@ -714,21 +729,24 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                 if (!isSelecting && !mIsBeingDragged) {
                     mInitialVelocity = getCurrentXVelocity()
                     val pointerIndex = ev.findPointerIndex(mActivePointerId)
-                    val x = ev.getX(pointerIndex)
+                    val x = ev.safeGetX(pointerIndex)
                     val xDiff = abs(x - mLastMotionX)
 
                     if (xDiff > mTouchSlop) {
                         if (DEBUG) Timber.v("Starting drag!")
                         mIsBeingDragged = true
-                        mLastMotionX = if (x - mInitialMotionX > 0)
+                        mLastMotionX = if (x - mInitialMotionX > 0) {
                             mInitialMotionX + mTouchSlop
-                        else
+                        }
+                        else {
                             mInitialMotionX - mTouchSlop
+                        }
                         setScrollState(SCROLL_STATE_DRAGGING)
-                        setScrollingCacheEnabled(true)
                     }
+
                 }
             }
+
             MotionEvent.ACTION_UP -> when {
                 mIsBeingDragged -> {
                     mIsBeingDragged = false
@@ -761,9 +779,11 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                             targetPage < 0 -> {
                                 scrollLeft(animated = true)
                             }
+
                             targetPage >= numPages -> {
                                 scrollRight(animated = true)
                             }
+
                             else -> {
                                 setCurrentItemInternal(targetPage, true, velocity)
                             }
@@ -783,12 +803,14 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                 mIsBeingDragged = false
                 scrollToItem(mCurItem, true, 0, false)
             }
+
             MotionEvent.ACTION_POINTER_DOWN -> {
                 val index = ev.actionIndex
                 val x = ev.getX(index)
                 mLastMotionX = x
                 mActivePointerId = ev.getPointerId(index)
             }
+
             MotionEvent.ACTION_POINTER_UP -> {
                 onSecondaryPointerUp(ev)
                 mLastMotionX = ev.getX(ev.findPointerIndex(mActivePointerId))
@@ -912,16 +934,20 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
         var handled = false
         if (event.action == KeyEvent.ACTION_DOWN) {
             when (event.keyCode) {
-                KeyEvent.KEYCODE_DPAD_LEFT -> handled = if (event.hasModifiers(KeyEvent.META_ALT_ON)) {
-                    pageLeft()
-                } else {
-                    arrowScroll(View.FOCUS_LEFT)
-                }
-                KeyEvent.KEYCODE_DPAD_RIGHT -> handled = if (event.hasModifiers(KeyEvent.META_ALT_ON)) {
-                    pageRight()
-                } else {
-                    arrowScroll(View.FOCUS_RIGHT)
-                }
+                KeyEvent.KEYCODE_DPAD_LEFT -> handled =
+                    if (event.hasModifiers(KeyEvent.META_ALT_ON)) {
+                        pageLeft()
+                    } else {
+                        arrowScroll(View.FOCUS_LEFT)
+                    }
+
+                KeyEvent.KEYCODE_DPAD_RIGHT -> handled =
+                    if (event.hasModifiers(KeyEvent.META_ALT_ON)) {
+                        pageRight()
+                    } else {
+                        arrowScroll(View.FOCUS_RIGHT)
+                    }
+
                 KeyEvent.KEYCODE_TAB -> if (event.hasNoModifiers()) {
                     handled = arrowScroll(View.FOCUS_FORWARD)
                 } else if (event.hasModifiers(KeyEvent.META_SHIFT_ON)) {
@@ -964,7 +990,10 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
                     sb.append(" => ").append(parent.javaClass.simpleName)
                     parent = parent.parent
                 }
-                if (DEBUG) Timber.e("arrowScroll tried to find focus based on non-child current focused view %s", sb.toString())
+                if (DEBUG) Timber.e(
+                    "arrowScroll tried to find focus based on non-child current focused view %s",
+                    sb.toString()
+                )
                 currentFocused = null
             }
         }
@@ -1053,11 +1082,12 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
         return false
     }
 
-    internal val numPages: Int get() =
-        getClientWidth()
-            ?.let { clientWidth -> (computeHorizontalScrollRange() / clientWidth.toDouble()).roundToInt() }
-            ?.coerceAtLeast(1)
-            ?: 1
+    internal val numPages: Int
+        get() =
+            getClientWidth()
+                ?.let { clientWidth -> (computeHorizontalScrollRange() / clientWidth.toDouble()).roundToInt() }
+                ?.coerceAtLeast(1)
+                ?: 1
 
     /**
      * Layout parameters that should be supplied for views added to a
@@ -1093,4 +1123,25 @@ class R2WebView(context: Context, attrs: AttributeSet) : R2BasicWebView(context,
             a.recycle()
         }
     }
+
+    /**
+     * May crash with java.lang.IllegalArgumentException: pointerIndex out of range
+     */
+    private fun MotionEvent.safeGetX(pointerIndex: Int): Float =
+        try {
+            getX(pointerIndex)
+        } catch (e: IllegalArgumentException) {
+            0F
+        }
+
+    /**
+     * May crash with java.lang.IllegalArgumentException: pointerIndex out of range
+     */
+    private fun MotionEvent.safeGetY(pointerIndex: Int): Float =
+        try {
+            getY(pointerIndex)
+        } catch (e: IllegalArgumentException) {
+            0F
+        }
 }
+

@@ -522,7 +522,7 @@ private fun ColumnScope.ReflowableUserPreferences(
                         ReadiumTextAlign.END -> "End"
                         ReadiumTextAlign.LEFT -> "Left"
                         ReadiumTextAlign.RIGHT -> "Right"
-                        null -> "Default"
+                        else -> "Default"
                     }
                 }
             }

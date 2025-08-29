@@ -58,7 +58,6 @@ ksp = "1.9.24-1.0.20"
 
 ktlint = "11.5.1"
 
-pdfium = "1.8.2"
 pdf-viewer = "2.8.2"
 picasso = "2.8"
 pspdfkit = "8.4.1"
@@ -138,7 +137,6 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 
-pdfium = { group = "com.github.barteksc", name = "pdfium-android", version.ref="pdfium" }
 picasso = { group = "com.squareup.picasso", name = "picasso", version.ref = "picasso" }
 pspdfkit = { group = "com.pspdfkit", name = "pspdfkit", version.ref ="pspdfkit" }
 

@@ -10,6 +10,7 @@ plugins {
 }
 
 android {
+    ndkVersion = "28.2.13676358"
     namespace = "org.readium.r2.navigator"
 
     buildFeatures {

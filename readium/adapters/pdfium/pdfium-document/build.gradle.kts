@@ -14,11 +14,10 @@ android {
 
 dependencies {
     api(project(":readium:readium-shared"))
-
     implementation(libs.androidx.core)
-    implementation(libs.pdfium)
     implementation(libs.timber)
     implementation(libs.bundles.coroutines)
+    implementation(files("../libs/PdfiumAndroid-2.0.0-release.aar"))
 
     testImplementation(libs.junit)
 

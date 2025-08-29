@@ -12,6 +12,7 @@ group = property("pom.groupId") as String
 
 android {
     resourcePrefix = "readium_"
+    ndkVersion = "28.2.13676358"
 
     compileSdk = (property("android.compileSdk") as String).toInt()
 

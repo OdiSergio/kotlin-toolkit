@@ -26,17 +26,23 @@ internal data class PackageDocument(
             val epubVersion = document.getAttr("version")?.toDoubleOrNull() ?: 1.2
             val metadata = MetadataParser(epubVersion, prefixMap).parse(document, filePath)
                 ?: return null
+
             val manifestElement = document.getFirst("manifest", Namespaces.OPF)
+                ?: document.getFirst("manifest", "")
                 ?: return null
+
             val spineElement = document.getFirst("spine", Namespaces.OPF)
+                ?: document.getFirst("spine", "")
                 ?: return null
+
 
             return PackageDocument(
                 path = filePath,
                 epubVersion = epubVersion,
                 uniqueIdentifierId = document.getAttr("unique-identifier"),
                 metadata = metadata,
-                manifest = manifestElement.get("item", Namespaces.OPF)
+                manifest = (manifestElement.get("item", Namespaces.OPF) +
+                    manifestElement.get("item", ""))
                     .mapNotNull { Item.parse(it, filePath, prefixMap) },
                 spine = Spine.parse(spineElement, prefixMap, epubVersion)
             )
@@ -77,7 +83,9 @@ internal data class Spine(
 ) {
     companion object {
         fun parse(element: ElementNode, prefixMap: Map<String, String>, epubVersion: Double): Spine {
-            val itemrefs = element.get("itemref", Namespaces.OPF).mapNotNull { Itemref.parse(it, prefixMap) }
+            val itemrefs = (element.get("itemref", Namespaces.OPF) +
+                element.get("itemref", ""))
+                .mapNotNull { Itemref.parse(it, prefixMap) }
             val pageProgressionDirection = when (element.getAttr("page-progression-direction")) {
                 "rtl" -> ReadingProgression.RTL
                 "ltr" -> ReadingProgression.LTR

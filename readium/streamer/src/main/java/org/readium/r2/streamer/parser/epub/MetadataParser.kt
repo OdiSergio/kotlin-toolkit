@@ -16,6 +16,7 @@ internal class MetadataParser(
 
     fun parse(document: ElementNode, filePath: String): List<MetadataItem>? {
         val metadata = document.getFirst("metadata", Namespaces.OPF)
+            ?: document.getFirst("metadata", "")
             ?: return null
         val items = parseElements(metadata, filePath)
         return resolveItemsHierarchy(items)
@@ -26,9 +27,9 @@ internal class MetadataParser(
             when {
                 e.namespace == Namespaces.DC ->
                     parseDcElement(e)
-                e.namespace == Namespaces.OPF && e.name == "meta" ->
+                (e.namespace == Namespaces.OPF || e.namespace == "") && e.name == "meta" ->
                     parseMetaElement(e)
-                e.namespace == Namespaces.OPF && e.name == "link" ->
+                (e.namespace == Namespaces.OPF || e.namespace == "") && e.name == "link" ->
                     parseLinkElement(e, filePath)
                 else -> null
             }
